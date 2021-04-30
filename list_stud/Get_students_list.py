@@ -39,24 +39,32 @@ class Stud_list:
     def get_list_students(self, token):
         '''can get lisy of students'''
         URL = self.SREVICE2
-        request = requests.post(url = URL, auth = (self.LOGIN, self.PASSWORD), verify = False, data = token.encode('utf-8'))
         requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+        request = requests.post(url = URL, auth = (self.LOGIN, self.PASSWORD), verify = False, data = token.encode('utf-8'))
         if request.status_code == 200:
             return request.json()
         else:
             return 'sorry, now server is unavailable'
 
-    def filling(self):
+    @property
+    def allstudents(self):
         '''create new dict and send to main file'''
-        list_person = []
-        for stud_id in self.format_post[''][1]['collection']:
-            temp = {}
-            temp.setdefault('sid', stud_id['guid'])
-            temp.setdefault('fullName', stud_id['fullName'])
-            temp.setdefault('group', stud_id['group'])
-            temp.setdefault('email', stud_id['email'])
-            list_person.append(temp)
-        return list_person  
+        list_person = set()
+        amount_stud  = len(self.format_post[''][1]['collection'])
+        for num, stud_id in enumerate(self.format_post[''][1]['collection']):
+            list_person.add((stud_id['fullName'], stud_id['group'], stud_id['email'], stud_id['guid']))      
+            print("sid - " + f"{stud_id['guid']}")
+        print(f'list of students {len(list_person)}')
+        return list_person
+
+
+    def pivot(self, list_person):
+        '''create pivot list'''
+        pivot = {}
+        for num, line in enumerate(list_person):
+            if line[3] not in pivot:
+                pivot[line[3]] = {}
+        return pivot
 
 
 
